@@ -1,0 +1,309 @@
+{
+  "name": "NSFWTagger AI Plugin",
+  "description": "AI-powered media tagging plugin for Stash using LMStudio vision models",
+  "version": "1.0.0",
+  "author": "NSFWTagger Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-repo/nsfwtagger-stash-plugin.git"
+  },
+  "homepage": "https://github.com/your-repo/nsfwtagger-stash-plugin",
+  "bugs": {
+    "url": "https://github.com/your-repo/nsfwtagger-stash-plugin/issues"
+  },
+  "keywords": [
+    "stash",
+    "plugin",
+    "ai",
+    "tagging",
+    "vision",
+    "lmstudio",
+    "nsfw"
+  ],
+  "stax": {
+    "min_version": "0.20.0",
+    "max_version": "*",
+    "api_version": "1.0.0"
+  },
+  "plugin": {
+    "type": "web",
+    "entry_point": "dist/index.html",
+    "api": {
+      "endpoints": [
+        {
+          "path": "/health",
+          "method": "GET",
+          "description": "Check plugin and container health"
+        },
+        {
+          "path": "/process/scene",
+          "method": "POST",
+          "description": "Process a single scene"
+        },
+        {
+          "path": "/process/image",
+          "method": "POST",
+          "description": "Process a single image"
+        },
+        {
+          "path": "/process/batch",
+          "method": "POST",
+          "description": "Process multiple items in batch"
+        },
+        {
+          "path": "/status",
+          "method": "GET",
+          "description": "Get processing status"
+        },
+        {
+          "path": "/cancel",
+          "method": "POST",
+          "description": "Cancel current processing"
+        },
+        {
+          "path": "/settings",
+          "method": "GET",
+          "description": "Get plugin settings"
+        },
+        {
+          "path": "/settings",
+          "method": "POST",
+          "description": "Update plugin settings"
+        }
+      ],
+      "permissions": [
+        "read:scenes",
+        "read:images",
+        "write:scenes",
+        "write:images",
+        "read:tags",
+        "write:tags",
+        "read:markers",
+        "write:markers"
+      ]
+    },
+    "ui": {
+      "components": [
+        {
+          "name": "Dashboard",
+          "path": "/dashboard",
+          "description": "Plugin dashboard with overview and quick actions"
+        },
+        {
+          "name": "Settings",
+          "path": "/settings",
+          "description": "Plugin configuration and settings"
+        },
+        {
+          "name": "BatchProcessor",
+          "path": "/batch",
+          "description": "Batch processing interface for multiple items"
+        },
+        {
+          "name": "ProgressTracker",
+          "path": "/progress",
+          "description": "Real-time progress tracking for ongoing processing"
+        }
+      ],
+      "menu_items": [
+        {
+          "label": "NSFWTagger",
+          "path": "/dashboard",
+          "icon": "🏷️",
+          "description": "AI-powered media tagging"
+        },
+        {
+          "label": "Batch Processing",
+          "path": "/batch",
+          "icon": "📦",
+          "description": "Process multiple items at once"
+        },
+        {
+          "label": "Settings",
+          "path": "/settings",
+          "icon": "⚙️",
+          "description": "Configure plugin settings"
+        }
+      ]
+    },
+    "dependencies": {
+      "required": [
+        {
+          "name": "NSFWTagger Container",
+          "version": ">=1.0.0",
+          "description": "Docker container for AI processing",
+          "url": "http://localhost:8000"
+        },
+        {
+          "name": "LMStudio",
+          "version": ">=0.2.20",
+          "description": "Local AI model runner",
+          "url": "http://localhost:1234"
+        }
+      ],
+      "optional": []
+    },
+    "configuration": {
+      "nsfwtagger": {
+        "host": {
+          "type": "string",
+          "default": "localhost",
+          "description": "NSFWTagger container host",
+          "validation": {
+            "pattern": "^(localhost|\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})$",
+            "message": "Invalid host format"
+          }
+        },
+        "port": {
+          "type": "number",
+          "default": 8000,
+          "description": "NSFWTagger container port",
+          "validation": {
+            "min": 1,
+            "max": 65535,
+            "message": "Port must be between 1 and 65535"
+          }
+        },
+        "timeout": {
+          "type": "number",
+          "default": 300,
+          "description": "Request timeout in seconds",
+          "validation": {
+            "min": 10,
+            "max": 3600,
+            "message": "Timeout must be between 10 and 3600 seconds"
+          }
+        }
+      },
+      "lmstudio": {
+        "host": {
+          "type": "string",
+          "default": "localhost",
+          "description": "LMStudio host",
+          "validation": {
+            "pattern": "^(localhost|\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3})$",
+            "message": "Invalid host format"
+          }
+        },
+        "port": {
+          "type": "number",
+          "default": 1234,
+          "description": "LMStudio port",
+          "validation": {
+            "min": 1,
+            "max": 65535,
+            "message": "Port must be between 1 and 65535"
+          }
+        }
+      },
+      "processing": {
+        "mode": {
+          "type": "string",
+          "default": "untagged",
+          "description": "Processing mode",
+          "enum": ["all", "untagged", "recent", "selected"],
+          "validation": {
+            "message": "Invalid processing mode"
+          }
+        },
+        "concurrency": {
+          "type": "number",
+          "default": 4,
+          "description": "Number of concurrent requests",
+          "validation": {
+            "min": 1,
+            "max": 16,
+            "message": "Concurrency must be between 1 and 16"
+          }
+        },
+        "batch_size": {
+          "type": "number",
+          "default": 10,
+          "description": "Number of items per batch",
+          "validation": {
+            "min": 1,
+            "max": 100,
+            "message": "Batch size must be between 1 and 100"
+          }
+        },
+        "frame_interval": {
+          "type": "number",
+          "default": 5,
+          "description": "Frame extraction interval in seconds",
+          "validation": {
+            "min": 1,
+            "max": 60,
+            "message": "Frame interval must be between 1 and 60 seconds"
+          }
+        },
+        "max_frames": {
+          "type": "number",
+          "default": 50,
+          "description": "Maximum frames per video",
+          "validation": {
+            "min": 1,
+            "max": 1000,
+            "message": "Max frames must be between 1 and 1000"
+          }
+        }
+      },
+      "debug": {
+        "enabled": {
+          "type": "boolean",
+          "default": false,
+          "description": "Enable debug mode"
+        },
+        "log_level": {
+          "type": "string",
+          "default": "INFO",
+          "description": "Log level",
+          "enum": ["DEBUG", "INFO", "WARNING", "ERROR"],
+          "validation": {
+            "message": "Invalid log level"
+          }
+        }
+      }
+    },
+    "capabilities": {
+      "batch_processing": true,
+      "progress_tracking": true,
+      "error_handling": true,
+      "settings_management": true,
+      "health_monitoring": true
+    },
+    "compatibility": {
+      "stash_versions": [">=0.20.0"],
+      "platforms": ["windows", "macos", "linux"],
+      "browsers": ["chrome", "firefox", "safari", "edge"]
+    },
+    "security": {
+      "cors": {
+        "enabled": true,
+        "allowed_origins": ["http://localhost:*", "https://localhost:*"],
+        "allowed_methods": ["GET", "POST", "PUT", "DELETE"],
+        "allowed_headers": ["Content-Type", "Authorization"]
+      },
+      "authentication": {
+        "required": false,
+        "type": "none"
+      },
+      "data_privacy": {
+        "local_processing": true,
+        "no_cloud": true,
+        "secure_communication": true
+      }
+    },
+    "monitoring": {
+      "health_check_interval": 30,
+      "metrics_enabled": true,
+      "logs_retention_days": 30,
+      "error_reporting": true
+    },
+    "updates": {
+      "auto_check": true,
+      "check_interval": 86400,
+      "update_url": "https://api.github.com/repos/your-repo/nsfwtagger-stash-plugin/releases/latest"
+    }
+  }
+}
