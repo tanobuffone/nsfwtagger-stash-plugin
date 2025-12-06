@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  nsfwtag-processor:
+    build:
+      context: ./nsfwtag-processor
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./temp_images:/app/temp_images
+      - ./logs:/app/logs
+    environment:
+      - OLLAMA_HOST=${OLLAMA_HOST:-http://localhost:11434}
+      - OLLAMA_MODEL=${OLLAMA_MODEL:-qwen3-vl-4b-instruct/Qwen3-VL-4B-Instruct-Q4_K_M.gguf}
+      - OLLAMA_FALLBACK_MODEL=${OLLAMA_FALLBACK_MODEL:-olmocr-2-7b-1025/olmOCR-2-7B-1025-Q4_K_M.gguf}
+      - FRAME_INTERVAL=${FRAME_INTERVAL:-10}
+      - MAX_FRAMES_PER_VIDEO=${MAX_FRAMES_PER_VIDEO:-25}
+      - CONCURRENCY=${CONCURRENCY:-2}
+      - BATCH_SIZE=${BATCH_SIZE:-5}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - nsfwtag-network
+
+networks:
+  nsfwtag-network:
+    driver: bridge
+
+volumes:
+  temp_images:
+  logs:

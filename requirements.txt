@@ -1,0 +1,45 @@
+# Core dependencies for NSFWTag AI Tagger
+# Python 3.9+ required
+
+# Web framework and HTTP client
+fastapi==0.111.0
+uvicorn[standard]==0.29.0
+aiohttp==3.9.5
+httpx==0.27.0
+
+# Data validation and serialization
+pydantic==2.8.2
+pydantic-settings==2.3.0
+
+# Media processing
+opencv-python==4.10.0.84
+pillow==11.0.0
+numpy==2.0.2
+
+# Video processing (optional, for advanced features)
+# moviepy==1.0.3
+# ffmpeg-python==0.2.0
+deffcode==0.2.3
+
+# AI/ML integration
+torch==2.4.0
+torchvision==0.19.0
+transformers==4.44.2
+
+# Utility libraries
+python-multipart==0.0.9
+python-dotenv==1.1.1
+click==8.1.7
+
+# Development and testing (optional)
+pytest==8.3.4
+pytest-asyncio==0.24.0
+black==24.8.0
+mypy==1.11.2
+
+# Windows-specific dependencies (if needed)
+# pywin32==308 (for Windows-specific features)
+
+# Logging and monitoring
+rich==13.9.4
+colorlog==6.8.2
